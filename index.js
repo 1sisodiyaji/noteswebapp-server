@@ -9,7 +9,7 @@ const userRoutes = require('./routes/user');
 const notesRoutes = require('./routes/notes');
 
 const corsOptions = {
-  origin: ['https://noteswebapp-nu.vercel.app', 'http://localhost:3000'],
+  origin: ['https://noteswebapp-rust.vercel.app', 'http://localhost:3000'],
   credentials: true,  
   methods: "GET,POST,PUT,DELETE,OPTIONS",  
   allowedHeaders: "Content-Type,Authorization,X-Requested-With"  

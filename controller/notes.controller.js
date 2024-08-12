@@ -65,7 +65,7 @@ exports.updateNotes = async (req, res) => {
     }
   
     try { 
-      const notes = await Notes.findById(projectId);
+      const notes = await Notes.findById(notesId);
       if (!notes) {
         return res.status(404).json({ message: 'Notes not found' });
       }
