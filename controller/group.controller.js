@@ -13,42 +13,24 @@ exports.getGroups =  async (req, res) => {
 };
 exports.GetGroupBySlug = async (req, res) => {
   const { slug } = req.params; 
-  try {
 
-    const group = await Group.findOne({ slug }).populate({
+  try { 
+    const group = await Group.findOne({slug:  slug }).populate({
       path: 'notesIds',
-      populate: {
-        path: 'userId',
-        select: 'name',
-      },
+      select: 'content createdAt', // Only select the content field from notes
     });
-
 
     if (!group) {
       return res.status(404).send({ message: 'Group not found' });
     }
-
-    const notesIds = group.notesIds.map(note => note._id); // Extract IDs from Note documents
-
-    // Fetch notes by their IDs
-    const notes = await Note.find({ _id: { $in: notesIds } }).populate('userId', 'name');
-
  
-    if(!notes) {
-      return res.status(404).send({ message: 'Notes not found' });
-    }
-
-console.log("Your notes are " + notes);
-    const groupWithNotes = {
-      ...group._doc,
-      notes: notes
-    };
-console.log(groupWithNotes);
-    res.status(200).send(groupWithNotes);
+console.log(group);
+    res.status(200).send({group });
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({ message: 'Server error', error: err });
   }
 };
+
 exports.CreateGroup =  async (req, res) => {
   const {groupName , Color} = req.body;
   const AuthorId = req.userId;
