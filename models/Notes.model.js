@@ -13,7 +13,7 @@ const noteSchema = new Schema({
     },
     GroupId: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Group',
         required: true,
     }
 }, {

@@ -1,5 +1,5 @@
 const Notes = require('../models/Notes.model'); 
-
+const Group = require('../models/Group.model');
 exports.getNotes =  async (req, res) => {
     try {
       const notes = await Notes.find();
@@ -36,6 +36,15 @@ exports.CreateNotes =  async (req, res) => {
   });  
    const CreatedNotes =  await newNotes.save(); 
    if(CreatedNotes){
+    const group = await Group.findByIdAndUpdate(
+      GroupId,
+      { $push: { notesIds: CreatedNotes._id } }, // Assuming the Group schema has a notes array field
+      { new: true }
+    );
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
       res.status(201).send(CreatedNotes);
    }else{
       res.status(400).send(err);
@@ -118,4 +127,30 @@ exports.DeleteNotes =  async (req, res) => {
     } catch (err) {
       res.status(500).send(err);
     }
+};
+
+exports.getNotesByGroup = async (req, res) => {
+  try {
+    const { groupId } = req.params;
+    const notes = await Notes.find({ GroupId : groupId  });
+    res.status(200).json(notes);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching notes', error });
+  }
+};
+
+exports.GetNotesByAuthor =  async (req, res) => { 
+  const AuthorId = req.userId; 
+  if(!AuthorId) {
+    return res.status(401).json({ message: 'Author id is required' }); 
+  }
+  try {  
+  const notes = await Notes.find({ userId : AuthorId});
+  if(!notes){
+    return res.status(404).json({ message: 'No notes found by this author' });
+  }
+  res.status(200).json(notes);
+  } catch (err) {
+    res.status(400).send(err);
+  }
 };

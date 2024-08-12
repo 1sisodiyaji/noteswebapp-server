@@ -1,5 +1,7 @@
 const Group = require('../models/Group.model');
 const slugify = require('slugify');
+const Note = require('../models/Notes.model');
+const User = require('../models/User.model');
 
 exports.getGroups =  async (req, res) => {
     try {
@@ -10,23 +12,49 @@ exports.getGroups =  async (req, res) => {
     }
 };
 exports.GetGroupBySlug = async (req, res) => {
-  const slug = req.params.slug;
-    try {
-      const group = await Group.find({slug : slug});
-      if (!group) {
-        return res.status(404).send();
-      }
-      res.status(200).send(group);
-    } catch (err) {
-      res.status(500).send(err);
+  const { slug } = req.params; 
+  try {
+
+    const group = await Group.findOne({ slug }).populate({
+      path: 'notesIds',
+      populate: {
+        path: 'userId',
+        select: 'name',
+      },
+    });
+
+
+    if (!group) {
+      return res.status(404).send({ message: 'Group not found' });
     }
+
+    const notesIds = group.notesIds.map(note => note._id); // Extract IDs from Note documents
+
+    // Fetch notes by their IDs
+    const notes = await Note.find({ _id: { $in: notesIds } }).populate('userId', 'name');
+
+ 
+    if(!notes) {
+      return res.status(404).send({ message: 'Notes not found' });
+    }
+
+console.log("Your notes are " + notes);
+    const groupWithNotes = {
+      ...group._doc,
+      notes: notes
+    };
+console.log(groupWithNotes);
+    res.status(200).send(groupWithNotes);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 exports.CreateGroup =  async (req, res) => {
   const {groupName , Color} = req.body;
   const AuthorId = req.userId;
  
   if(!groupName || !Color){
-      return res.status(401).json({message: 'please fill the froup name and color code'});
+      return res.status(401).json({message: 'please fill the Group name and color code'});
   }
   console.log(groupName + ' ' + Color + ' ' + AuthorId);
   try {
