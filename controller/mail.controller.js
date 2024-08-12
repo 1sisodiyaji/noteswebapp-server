@@ -118,10 +118,7 @@ exports.sendemail =  async (req, res) => {
       }  
      const sended =  await sendEmail(email , "VERIFY" , otp);
   
-       if(!sended) {
-        return res.json({ status: "error", message: "Failed to send OTP email." });
-      }
-
+       
       return res .status(200) .json({ status: "success", message: "OTP sent successfully." });
     } catch (error) {
       console.error("Error sending OTP email:", error.message);
@@ -133,12 +130,14 @@ exports.sendemail =  async (req, res) => {
   
 exports.verifyOtp =  async (req, res) => {
     const { otp } = req.body;
-    const { email } = req.body; 
+    const { email } = req.body;  
     if (!email || !otp) {
       return res.json({ status: "error", message: "Please fill the otp." });
     } else { 
-      const otpCheck = await User.findOne({ email }); 
+      const otpCheck = await User.findOne({ email });  
       if (otpCheck) {
+        console.log(otpCheck.otp);
+        console.log(otp);
         if (otpCheck.otp == otp) {
           return res.json({
             status: "success",

@@ -29,13 +29,13 @@ const sendEmail = async (email, emailType, verificationCode) => {
     };
   } else if (emailType === "FEEDBACK") {
     mailOptions = {
-      from: "Connect@codesaarthi.com",
+      from: "Connect@NotesSaver.com",
       to: `${email}`,
       subject: "Thank you for your feedback",
       html: `<p><b>Dear User,</b></p>
         <p>We apologize for any inconvenience you may have faced on our website. Your feedback is valuable to us, and we assure you that we are working to resolve the issue as soon as possible.</p>
         <p>Thank you for bringing this to our attention, and we appreciate your patience.</p>
-        <p>Best regards,<br>Your Codesaarthi Team</p>`,
+        <p>Best regards,<br>Your Notes Saver Team</p>`,
     };
   }
 
